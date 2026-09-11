@@ -249,18 +249,78 @@ st.empty()
 
 
 
+
 # =========================================================
 # 그래프 4
-# 앞으로 추가할 그래프
+# 영화별 일관객 합계 TOP 10
 # =========================================================
 
 st.divider()
-st.header("그래프 4")
+st.header("그래프 4. 영화별 일관객 합계 TOP 10")
 
-# 여기에 네 번째 그래프 코드를 작성하세요.
+# 영화별 일관객 합계와 10위권에 든 날짜 수 계산
+movie_summary = (
+    df.groupby("영화명")
+    .agg(
+        일관객합계=("일관객", "sum"),
+        10위권_일수=("날짜", "nunique")
+    )
+    .reset_index()
+)
+
+# 일관객 합계가 가장 큰 영화 TOP 10
+top10_movies = (
+    movie_summary
+    .sort_values("일관객합계", ascending=False)
+    .head(10)
+)
+
+# 가로 막대그래프에서 관객이 많은 영화가 위에 오도록
+top10_movies = top10_movies.sort_values(
+    "일관객합계",
+    ascending=True
+)
+
+fig4 = px.bar(
+    top10_movies,
+    x="일관객합계",
+    y="영화명",
+    orientation="h",
+    title="영화별 이 기간 일관객 합계 TOP 10",
+    labels={
+        "영화명": "영화",
+        "일관객합계": "일관객 합계"
+    },
+    hover_data={
+        "일관객합계": ":,",
+        "10위권_일수": ":,",
+    }
+)
+
+# 마우스를 올렸을 때 일관객 합계와 10위권 일수 표시
+fig4.update_traces(
+    hovertemplate=(
+        "영화: %{y}<br>"
+        "일관객 합계: %{x:,}명<br>"
+        "10위권에 든 날수: %{customdata[0]}일"
+        "<extra></extra>"
+    )
+)
+
+fig4.update_layout(
+    xaxis_title="이 기간 일관객 합계(명)",
+    yaxis_title="영화",
+    hovermode="closest"
+)
+
+st.plotly_chart(
+    fig4,
+    use_container_width=True
+)
 
 st.markdown("**이 그래프로 알 수 있는 것:**")
 st.empty()
+
 
 
 # =========================================================
