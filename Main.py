@@ -1,163 +1,37 @@
+# 영화 데이터 그래프 도감 1 - 시간
 import streamlit as st
 import pandas as pd
 import plotly.express as px
 
+st.set_page_config(page_title="영화 데이터 그래프 도감 1 - 시간", layout="wide")
+st.title("영화 데이터 그래프 도감 1 - 시간")
 
-# -----------------------------------------
-# 기본 설정
-# -----------------------------------------
-st.set_page_config(
-    page_title="영화 데이터 그래프 도감 1 - 시간",
-    page_icon="🎬",
-    layout="wide"
-)
-
-
-# -----------------------------------------
-# 제목
-# -----------------------------------------
-st.title("🎬 영화 데이터 그래프 도감 1 - 시간")
-
-st.write(
-    "일별 박스오피스 데이터를 이용해 영화의 관객 변화를 살펴봅니다."
-)
-
-
-# -----------------------------------------
-# 데이터 불러오기
-# -----------------------------------------
-DATA_URL = (
-    "https://raw.githubusercontent.com/"
-    "greatsong/modudata/main/data/kobis_daily.csv"
-)
+DATA_URL = "https://raw.githubusercontent.com/greatsong/modudata/main/data/kobis_daily.csv"
 
 
 @st.cache_data
 def load_data():
+    # 1년치(365일) 일별 박스오피스 10위권 기록을 불러옵니다.
     df = pd.read_csv(DATA_URL)
-
-    # 날짜 열을 실제 날짜 형식으로 변환
-    df["날짜"] = pd.to_datetime(
-        df["날짜"].astype(str),
-        format="%Y%m%d"
-    )
-
-    # 숫자형 열 변환
-    numeric_columns = [
-        "순위",
-        "영화코드",
-        "일관객",
-        "누적관객",
-        "스크린수",
-        "상영횟수"
-    ]
-
-    for column in numeric_columns:
-        df[column] = pd.to_numeric(
-            df[column],
-            errors="coerce"
-        )
-
+    # 여덟 자리 숫자로 된 날짜 열을 진짜 날짜로 바꿉니다.
+    df["날짜"] = pd.to_datetime(df["날짜"], format="%Y%m%d")
     return df
 
 
 df = load_data()
 
+# ── 그래프 1. 영화 하나의 흥행 곡선 ──────────────────────────
+st.header("1. 한 영화의 흥행 곡선")
 
-# =========================================
-# 그래프 1
-# =========================================
-st.header("그래프 1. 영화별 날짜에 따른 일관객 변화")
+# 드롭다운으로 영화를 고릅니다.
+movie_list = sorted(df["영화명"].unique())
+movie = st.selectbox("영화를 고르세요", movie_list)
 
-# 영화 목록
-movie_list = sorted(df["영화명"].dropna().unique())
+one = df[df["영화명"] == movie].sort_values("날짜")
+fig = px.line(one, x="날짜", y="일관객", markers=True)
+fig.update_traces(hovertemplate="날짜 %{x|%Y-%m-%d}<br>관객 %{y:,}명<extra></extra>")
+st.plotly_chart(fig, width="stretch")
 
-selected_movie = st.selectbox(
-    "영화를 선택하세요.",
-    movie_list
-)
+st.caption("이 그래프로 알 수 있는 것: (한 문장으로 적어 보세요)")
 
-
-# 선택한 영화만 추출
-movie_df = df[df["영화명"] == selected_movie].copy()
-
-# 날짜순 정렬
-movie_df = movie_df.sort_values("날짜")
-
-
-# -----------------------------------------
-# 선 그래프
-# -----------------------------------------
-fig = px.line(
-    movie_df,
-    x="날짜",
-    y="일관객",
-    markers=True,
-    title=f"「{selected_movie}」 날짜별 일관객 변화",
-    labels={
-        "날짜": "날짜",
-        "일관객": "일관객 수"
-    },
-    hover_data={
-        "날짜": "|%Y-%m-%d",
-        "일관객": ":,"
-    }
-)
-
-fig.update_traces(
-    hovertemplate=
-    "날짜: %{x|%Y-%m-%d}<br>"
-    "일관객: %{y:,}명"
-    "<extra></extra>"
-)
-
-fig.update_layout(
-    xaxis_title="날짜",
-    yaxis_title="일관객 수(명)",
-    hovermode="x unified"
-)
-
-st.plotly_chart(
-    fig,
-    width="stretch"
-)
-
-
-# -----------------------------------------
-# 그래프 설명 작성 공간
-# -----------------------------------------
-st.markdown("### 이 그래프로 알 수 있는 것")
-
-st.info(
-    "✏️ 여기에 이 그래프로 알 수 있는 내용을 직접 작성하세요."
-)
-
-
-# =========================================
-# 다음 그래프를 위한 구역
-# =========================================
-st.divider()
-
-st.header("그래프 2")
-st.write("다음 그래프를 이곳에 추가하세요.")
-
-st.markdown("### 이 그래프로 알 수 있는 것")
-
-st.info(
-    "✏️ 여기에 이 그래프로 알 수 있는 내용을 직접 작성하세요."
-)
-
-
-# =========================================
-# 그래프 3을 추가할 때 사용할 구역
-# =========================================
-st.divider()
-
-st.header("그래프 3")
-st.write("다음 그래프를 이곳에 추가하세요.")
-
-st.markdown("### 이 그래프로 알 수 있는 것")
-
-st.info(
-    "✏️ 여기에 이 그래프로 알 수 있는 내용을 직접 작성하세요."
-)
+# ── 앞으로 그래프 2, 3, 4, 5가 이 아래에 추가됩니다 ──────────
