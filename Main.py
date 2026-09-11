@@ -162,18 +162,91 @@ st.empty()
 
 
 
+
 # =========================================================
 # 그래프 3
-# 앞으로 추가할 그래프
+# 날짜별 10위권 일관객 합계
 # =========================================================
 
 st.divider()
-st.header("그래프 3")
+st.header("그래프 3. 날짜별 10위권 일관객 합계")
 
-# 여기에 세 번째 그래프 코드를 작성하세요.
+# 날짜별 일관객 합계 계산
+daily_audience = (
+    df.groupby("날짜", as_index=False)["일관객"]
+    .sum()
+    .sort_values("날짜")
+)
+
+# 일관객 합계가 가장 큰 3일 찾기
+top3_days = (
+    daily_audience
+    .nlargest(3, "일관객")
+    .sort_values("날짜")
+)
+
+# 영역 그래프
+fig3 = px.area(
+    daily_audience,
+    x="날짜",
+    y="일관객",
+    title="날짜별 10위권 일관객 합계",
+    labels={
+        "날짜": "날짜",
+        "일관객": "10위권 일관객 합계"
+    },
+    hover_data={
+        "날짜": "|%Y-%m-%d",
+        "일관객": ":,"
+    }
+)
+
+# 전체 날짜별 합계 툴팁
+fig3.update_traces(
+    hovertemplate=(
+        "날짜: %{x|%Y-%m-%d}<br>"
+        "10위권 일관객 합계: %{y:,}명"
+        "<extra></extra>"
+    )
+)
+
+# 가장 큰 3일을 그래프 위에 표시
+fig3.add_scatter(
+    x=top3_days["날짜"],
+    y=top3_days["일관객"],
+    mode="markers+text",
+    text=[
+        date.strftime("%Y-%m-%d")
+        for date in top3_days["날짜"]
+    ],
+    textposition="top center",
+    marker=dict(
+        size=10,
+        color="red"
+    ),
+    name="합계 TOP 3",
+    hovertemplate=(
+        "날짜: %{x|%Y-%m-%d}<br>"
+        "10위권 일관객 합계: %{y:,}명"
+        "<extra></extra>"
+    )
+)
+
+fig3.update_layout(
+    xaxis_title="날짜",
+    yaxis_title="10위권 일관객 합계(명)",
+    hovermode="x unified",
+    showlegend=False
+)
+
+st.plotly_chart(
+    fig3,
+    use_container_width=True
+)
 
 st.markdown("**이 그래프로 알 수 있는 것:**")
 st.empty()
+
 
 
 # =========================================================
@@ -204,15 +277,3 @@ st.markdown("**이 그래프로 알 수 있는 것:**")
 st.empty()
 
 
-# =========================================================
-# 그래프 6
-# 앞으로 추가할 그래프
-# =========================================================
-
-st.divider()
-st.header("그래프 6")
-
-# 여기에 여섯 번째 그래프 코드를 작성하세요.
-
-st.markdown("**이 그래프로 알 수 있는 것:**")
-st.empty()
