@@ -292,7 +292,6 @@ st.info(
 )
 
 
-
 # =========================================
 # 그래프 4
 # =========================================
@@ -305,12 +304,12 @@ movie_summary = (
     df.groupby("영화명")
     .agg(
         일관객_합계=("일관객", "sum"),
-        10위권_일수=("날짜", "nunique")
+        10위권_일수=("날짜", "nunique"),
     )
     .reset_index()
 )
 
-# 일관객 합계가 많은 순서로 정렬한 뒤 TOP 10 선택
+# 일관객 합계가 많은 순서로 TOP 10 선택
 top10_movies = (
     movie_summary
     .sort_values("일관객_합계", ascending=False)
@@ -329,15 +328,12 @@ fig4 = px.bar(
     title="영화별 기간 일관객 TOP 10",
     labels={
         "일관객_합계": "기간 일관객 합계",
-        "영화명": "영화"
+        "영화명": "영화",
     },
-    hover_data={
-        "일관객_합계": ":,",
-        "10위권_일수": True
-    }
+    custom_data=["10위권_일수"],
 )
 
-# 마우스를 올렸을 때 관객 수와 10위권에 든 날 수 표시
+# 마우스를 올렸을 때 표시할 내용
 fig4.update_traces(
     hovertemplate=
     "영화: %{y}<br>"
@@ -349,9 +345,6 @@ fig4.update_traces(
 fig4.update_layout(
     xaxis_title="기간 일관객 합계(명)",
     yaxis_title="영화",
-    yaxis=dict(
-        categoryorder="total ascending"
-    )
 )
 
 st.plotly_chart(
@@ -368,4 +361,3 @@ st.markdown("### 이 그래프로 알 수 있는 것")
 st.info(
     "✏️ 여기에 이 그래프로 알 수 있는 내용을 직접 작성하세요."
 )
-
