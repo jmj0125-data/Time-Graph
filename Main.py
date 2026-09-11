@@ -212,13 +212,79 @@ st.info(
 
 
 # =========================================
-# 그래프 3을 추가할 때 사용할 구역
+# 그래프 3
 # =========================================
 st.divider()
 
-st.header("그래프 3")
-st.write("다음 그래프를 이곳에 추가하세요.")
+st.header("그래프 3. 날짜별 10위권 일관객 합계")
 
+# 날짜별 10위권 일관객 합계 계산
+daily_total = (
+    df.groupby("날짜", as_index=False)["일관객"]
+    .sum()
+    .sort_values("날짜")
+)
+
+# 일관객 합계가 가장 큰 날 3일 찾기
+top3_days = daily_total.nlargest(3, "일관객").copy()
+
+# 그래프에 표시할 날짜 라벨 만들기
+top3_days["날짜_표시"] = top3_days["날짜"].dt.strftime("%Y-%m-%d")
+
+# -----------------------------------------
+# 영역 그래프
+# -----------------------------------------
+fig3 = px.area(
+    daily_total,
+    x="날짜",
+    y="일관객",
+    title="날짜별 10위권 일관객 합계",
+    labels={
+        "날짜": "날짜",
+        "일관객": "10위권 일관객 합계"
+    }
+)
+
+# 마우스를 올렸을 때 날짜와 합계 표시
+fig3.update_traces(
+    hovertemplate=
+    "날짜: %{x|%Y-%m-%d}<br>"
+    "10위권 일관객 합계: %{y:,}명"
+    "<extra></extra>"
+)
+
+# -----------------------------------------
+# 합계가 가장 큰 3일 표시
+# -----------------------------------------
+fig3.add_scatter(
+    x=top3_days["날짜"],
+    y=top3_days["일관객"],
+    mode="markers+text",
+    text=top3_days["날짜_표시"],
+    textposition="top center",
+    marker=dict(size=10),
+    name="일관객 합계 TOP 3",
+    hovertemplate=
+    "날짜: %{x|%Y-%m-%d}<br>"
+    "10위권 일관객 합계: %{y:,}명"
+    "<extra></extra>"
+)
+
+fig3.update_layout(
+    xaxis_title="날짜",
+    yaxis_title="10위권 일관객 합계(명)",
+    hovermode="x unified"
+)
+
+st.plotly_chart(
+    fig3,
+    width="stretch"
+)
+
+
+# -----------------------------------------
+# 그래프 설명 작성 공간
+# -----------------------------------------
 st.markdown("### 이 그래프로 알 수 있는 것")
 
 st.info(
