@@ -87,7 +87,7 @@ st.plotly_chart(
     use_container_width=True
 )
 
-st.markdown("**이 그래프로 알 수 있는 것:**")
+st.markdown("**일관객변화가 그래프로 하향곡선과 상향곡선을 그린다:**")
 st.empty()
 
 
