@@ -251,14 +251,14 @@ st.empty()
 
 
 # ── 그래프 4. 기간 전체 관객 TOP 10 ─────────────────────────
-st.header("4. 이 기간 관객이 가장 많았던 열 편")
+st.header("그래프 4. 이 기간 관객이 가장 많았던 열 편")
 total = (df.groupby("영화명", as_index=False)
            .agg(관객합계=("일관객", "sum"), 등장일수=("날짜", "count"))
            .nlargest(10, "관객합계"))
 fig4 = px.bar(total.sort_values("관객합계"), x="관객합계", y="영화명",
               orientation="h", hover_data=["등장일수"])
 st.plotly_chart(fig4, width="stretch")
-st.caption("이 그래프로 알 수 있는 것: 특정 기간동안 관객이 가장 많았던 영화를 알 수 있다.")
+st.caption("**이 그래프로 알 수 있는 것: 특정 기간동안 관객이 가장 많았던 영화를 알 수 있다.**")
 
 
 
@@ -269,7 +269,7 @@ st.caption("이 그래프로 알 수 있는 것: 특정 기간동안 관객이 �
 # =========================================================
 
 # ── 그래프 5. 월 × 요일 히트맵 ──────────────────────────────
-st.header("5. 월과 요일로 접어 보기")
+st.header("그래프 5. 월과 요일로 접어 보기")
 요일이름 = ["월", "화", "수", "목", "금", "토", "일"]
 df["월"] = df["날짜"].dt.month
 df["요일"] = df["날짜"].dt.weekday.map(lambda i: 요일이름[i])
@@ -278,4 +278,4 @@ pivot = (df.pivot_table(index="월", columns="요일", values="일관객", aggfu
 fig5 = px.imshow(pivot, text_auto=".2s", aspect="auto",
                  labels=dict(x="요일", y="월", color="관객"))
 st.plotly_chart(fig5, width="stretch")
-st.caption("이 그래프로 알 수 있는 것: 월과 요일별로 관객이 가장 많았던 시기를 알 수 있다.")
+st.caption("**이 그래프로 알 수 있는 것: 월과 요일별로 관객이 가장 많았던 시기를 알 수 있다.**")
