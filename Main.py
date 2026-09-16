@@ -324,14 +324,81 @@ st.empty()
 # 앞으로 추가할 그래프
 # =========================================================
 
-# ── 그래프 5. 월 × 요일 히트맵 ──────────────────────────────
-st.header("그래프 5. 월과 요일로 접어 보기")
-요일이름 = ["월", "화", "수", "목", "금", "토", "일"]
-df["월"] = df["날짜"].dt.month
-df["요일"] = df["날짜"].dt.weekday.map(lambda i: 요일이름[i])
-pivot = (df.pivot_table(index="월", columns="요일", values="일관객", aggfunc="sum")
-           .reindex(columns=요일이름))
-fig5 = px.imshow(pivot, text_auto=".2s", aspect="auto",
-                 labels=dict(x="요일", y="월", color="관객"))
-st.plotly_chart(fig5, width="stretch")
-st.caption("**이 그래프로 알 수 있는 것: 월과 요일별로 관객이 가장 많았던 시기를 알 수 있다.**")
+# =========================================================
+# 그래프 5
+# 월 × 요일별 일관객 합계 히트맵
+# =========================================================
+
+st.divider()
+st.header("그래프 5. 월 × 요일별 일관객 합계")
+
+# 요일 이름
+weekday_order = [
+    "월요일",
+    "화요일",
+    "수요일",
+    "목요일",
+    "금요일",
+    "토요일",
+    "일요일"
+]
+
+# 날짜에서 월과 요일 추출
+df_heatmap = df.copy()
+
+df_heatmap["월"] = df_heatmap["날짜"].dt.month
+df_heatmap["요일"] = df_heatmap["날짜"].dt.dayofweek
+
+# 요일 숫자를 한글 요일로 변환
+df_heatmap["요일"] = df_heatmap["요일"].map(
+    dict(enumerate(weekday_order))
+)
+
+# 월 × 요일별 일관객 합계
+heatmap_data = (
+    df_heatmap
+    .groupby(["월", "요일"], as_index=False)["일관객"]
+    .sum()
+)
+
+# 피벗 테이블 생성
+heatmap_pivot = heatmap_data.pivot(
+    index="월",
+    columns="요일",
+    values="일관객"
+)
+
+# 요일 순서를 월요일 → 일요일으로 고정
+heatmap_pivot = heatmap_pivot.reindex(
+    columns=weekday_order
+)
+
+# 히트맵
+fig5 = px.imshow(
+    heatmap_pivot,
+    labels={
+        "x": "요일",
+        "y": "월",
+        "color": "일관객 합계"
+    },
+    x=weekday_order,
+    y=heatmap_pivot.index,
+    text_auto=",",
+    aspect="auto",
+    color_continuous_scale="Blues",
+    title="월 × 요일별 10위권 일관객 합계"
+)
+
+fig5.update_layout(
+    xaxis_title="요일",
+    yaxis_title="월",
+    coloraxis_colorbar_title="일관객 합계"
+)
+
+st.plotly_chart(
+    fig5,
+    use_container_width=True
+)
+
+st.markdown("**이 그래프로 알 수 있는 것:**")
+st.empty()
