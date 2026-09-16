@@ -313,7 +313,7 @@ st.plotly_chart(
     use_container_width=True
 )
 
-st.markdown("**이 그래프로 알 수 있는 것:**")
+st.markdown("**이 그래프로 알 수 있는 것:특정 기간동안 가장 관객이 많았던 영화의 순위를 볼 수 있다.**")
 st.empty()
 
 
@@ -400,5 +400,5 @@ st.plotly_chart(
     use_container_width=True
 )
 
-st.markdown("**이 그래프로 알 수 있는 것:**")
+st.markdown("**이 그래프로 알 수 있는 것:월과 요일별로 어떤 기간에 가장 많은 관객이 영화관에 왔는지 알 수 있다.**")
 st.empty()
