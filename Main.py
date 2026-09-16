@@ -87,7 +87,7 @@ st.plotly_chart(
     use_container_width=True
 )
 
-st.markdown("**이 그래프로 알 수 있는 것:그래프가 하향과 상향곡선을 그린다.**")
+st.markdown("**이 그래프로 알 수 있는 것:선택한 특정 영화의 관객의 변화를 알 수 있다.**")
 st.empty()
 
 
@@ -157,7 +157,7 @@ st.plotly_chart(
     use_container_width=True
 )
 
-st.markdown("**이 그래프로 알 수 있는 것:막대그래프가 파도처럼 퍼진다.**")
+st.markdown("**이 그래프로 알 수 있는 것:영화와 날짜별 관객의 수 변화 추이를 알 수 있다.**")
 st.empty()
 
 
@@ -244,7 +244,7 @@ st.plotly_chart(
     use_container_width=True
 )
 
-st.markdown("**이 그래프로 알 수 있는 것:**")
+st.markdown("**이 그래프로 알 수 있는 것:날짜별 일일 관객의 합계를 볼 수 있다.**")
 st.empty()
 
 
@@ -258,7 +258,7 @@ total = (df.groupby("영화명", as_index=False)
 fig4 = px.bar(total.sort_values("관객합계"), x="관객합계", y="영화명",
               orientation="h", hover_data=["등장일수"])
 st.plotly_chart(fig4, width="stretch")
-st.caption("이 그래프로 알 수 있는 것: (한 문장으로 적어 보세요)")
+st.caption("이 그래프로 알 수 있는 것: 특정 기간동안 관객이 가장 많았던 영화를 알 수 있다.")
 
 
 
@@ -278,4 +278,4 @@ pivot = (df.pivot_table(index="월", columns="요일", values="일관객", aggfu
 fig5 = px.imshow(pivot, text_auto=".2s", aspect="auto",
                  labels=dict(x="요일", y="월", color="관객"))
 st.plotly_chart(fig5, width="stretch")
-st.caption("이 그래프로 알 수 있는 것: (한 문장으로 적어 보세요)")
+st.caption("이 그래프로 알 수 있는 것: 월과 요일별로 관객이 가장 많았던 시기를 알 수 있다.")
